@@ -8,3 +8,12 @@ Content-Type: application/json
 {
     "titulo": "Estudar Node.js"
 }
+
+### Alterar status de uma tarefa
+PUT http://localhost:5000/api/tarefas/alterar/b72de609-720d-40d8-807c-0f432bcff8e7
+
+### Listar tarefas não concluídas
+GET http://localhost:5000/api/tarefas/naoconcluidas
+
+### Listar tarefas concluídas
+GET http://localhost:5000/api/tarefas/concluidas
