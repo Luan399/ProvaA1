@@ -1,10 +1,10 @@
-// ...existing code...
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 interface Tarefa {
-  tarefaId?: string; // backend provável
-  id?: string;       // caso venha assim
+  tarefaId?: string; 
+  id?: string;       
   titulo: string;
   status: string;
 }
@@ -41,7 +41,7 @@ function ListarTarefa() {
     const novoStatus = proximoStatus(tarefa.status);
 
     try {
-      // Se sua API espera PATCH use axios.patch
+     
       await axios.put(`http://localhost:5000/api/tarefas/alterar/${tId}`, {
         status: novoStatus
       });
@@ -87,4 +87,3 @@ function ListarTarefa() {
 }
 
 export default ListarTarefa;
-// ...existing code...
