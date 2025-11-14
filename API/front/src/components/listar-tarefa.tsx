@@ -1,65 +1,90 @@
+// ...existing code...
 import { useEffect, useState } from "react";
-import { Tarefa } from "../models/tarefa";
 import axios from "axios";
 
+interface Tarefa {
+  tarefaId?: string; // backend provável
+  id?: string;       // caso venha assim
+  titulo: string;
+  status: string;
+}
+
+const CICLO_STATUS = ["Não iniciada", "Em progresso", "Concluída", "Cancelada"];
+
+function proximoStatus(atual: string) {
+  const i = CICLO_STATUS.indexOf(atual);
+  return i === -1 || i === CICLO_STATUS.length - 1 ? CICLO_STATUS[0] : CICLO_STATUS[i + 1];
+}
+
 function ListarTarefa() {
-    const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const [msg, setMsg] = useState("");
 
-    
-    useEffect(() => {
-        console.log("O componente foi carregado!");
-        carregarTarefas();
-    }, []);
+  async function carregar() {
+    setMsg("");
+    try {
+      const r = await axios.get("http://localhost:5000/api/tarefas/listar");
+      setTarefas(r.data);
+    } catch {
+      setMsg("Erro ao listar.");
+    }
+  }
 
-    async function carregarTarefas() {
-        try {
-            const resposta = await axios.get(
-                "http://localhost:5000/api/tarefas/listar" 
+  useEffect(() => {
+    carregar();
+  }, []);
+
+  async function alterar(tId: string) {
+    setMsg("");
+    const tarefa = tarefas.find(t => (t.tarefaId || t.id) === tId);
+    if (!tarefa) return;
+    const novoStatus = proximoStatus(tarefa.status);
+
+    try {
+      // Se sua API espera PATCH use axios.patch
+      await axios.put(`http://localhost:5000/api/tarefas/alterar/${tId}`, {
+        status: novoStatus
+      });
+      await carregar();
+    } catch (e: any) {
+      console.error(e?.response?.data || e);
+      setMsg("Erro ao alterar.");
+    }
+  }
+
+  return (
+    <div>
+      <h2>Tarefas</h2>
+      <button onClick={carregar}>Recarregar</button>
+      {msg && <p>{msg}</p>}
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tarefas.map(t => {
+            const id = t.tarefaId || t.id || "";
+            return (
+              <tr key={id}>
+                <td>{id}</td>
+                <td>{t.titulo}</td>
+                <td>{t.status}</td>
+                <td>
+                  <button onClick={() => alterar(id)}>Alterar status</button>
+                </td>
+              </tr>
             );
-            setTarefas(resposta.data);
-        } catch (error) {
-            console.log("Erro na requisição: " + error);
-        }
-    }
-    async function alterarTarefas(id: string) {
-        try {
-            const resposta = await axios.patch(`http://localhost:5000/api/tarefas/alterar/${id}`);
-
-            carregarTarefas();
-        } catch (error) {
-            console.log("Erro ao alterar a tarefa: " + error);
-        }
-    }
-
-    return (
-        <div>
-            <h1>Listar Tarefas</h1> 
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>  
-                        <th>titulo</th>
-                        
-                        
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {tarefas.map((tarefa) => (
-                        <tr key={tarefa.id}>
-                            <td>{tarefa.id}</td>
-                            <td>{tarefa.titulo}</td>
-                            
-                            
-                        <td>
-                                <button onClick={() => alterarTarefas(tarefa.id)}>Alterar</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default ListarTarefa;
+// ...existing code...

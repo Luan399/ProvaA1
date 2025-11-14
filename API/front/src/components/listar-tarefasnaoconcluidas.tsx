@@ -30,6 +30,7 @@ function ListarTarefasnaoconcluidas() {
                     <tr>
                         <th>#</th>  
                         <th>titulo</th>
+                        <th>status</th>
                        
                     </tr>
                 </thead>
@@ -38,8 +39,7 @@ function ListarTarefasnaoconcluidas() {
                         <tr key={tarefa.id}>
                             <td>{tarefa.id}</td>
                             <td>{tarefa.titulo}</td>
-                            
-                            
+                            <td>{tarefa.status}</td>
                           
                             
                             <td>

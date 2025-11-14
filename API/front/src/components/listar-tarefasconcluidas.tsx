@@ -30,7 +30,7 @@ function ListarTarefasconcluidas() {
                     <tr>
                         <th>#</th>  
                         <th>Titulo</th>
-                        
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,7 +38,7 @@ function ListarTarefasconcluidas() {
                         <tr key={tarefa.id}>
                             <td>{tarefa.id}</td>
                             <td>{tarefa.titulo}</td>
-                            
+                            <td>{tarefa.status}</td>
                             <td>
                             
                             </td>
